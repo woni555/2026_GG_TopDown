@@ -1,4 +1,7 @@
+
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 public class Door : MonoBehaviour
 {
     public Transform target;
@@ -6,7 +9,9 @@ public class Door : MonoBehaviour
     public DialogueBox dialogueBox;
     public int needKeys = 0;
     public Talk lockedTalk;
+
     private Transform player;
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -16,6 +21,7 @@ public class Door : MonoBehaviour
             dialogueBox.nearDoor = this;
         }
     }
+
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -24,13 +30,22 @@ public class Door : MonoBehaviour
             dialogueBox.nearDoor = null;
         }
     }
+
     public void Use()
     {
-        Inventory inventory = player.GetComponent<Inventory>();
-        if (inventory.keys >= needKeys)
+        if (Inventory.keys >= needKeys)
         {
             player.position = target.position;
         }
-        else { lockedTalk.Say(); }
+        else
+        {
+            lockedTalk.Say();
+            Invoke(nameof(GoToStage2), 2f);
+        }
+    }
+
+    void GoToStage2()
+    {
+        SceneManager.LoadScene("Stage2");
     }
 }
